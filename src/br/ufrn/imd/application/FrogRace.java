@@ -31,11 +31,9 @@ public class FrogRace {
 				}
 			}
 			System.out.println("=================================================");
-		}
+		}	
 
 		for (int i = 0; i < FROGS_NUMBER; i++) {
-			frogs[i].setPlacing(i);
-			
 			System.out.println(frogs[i].getName() + " finished race in " + (frogs[i].getPlacing()+1));
 		}
 	}
