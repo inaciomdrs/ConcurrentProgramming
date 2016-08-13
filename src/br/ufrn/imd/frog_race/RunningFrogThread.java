@@ -1,4 +1,4 @@
-package br.ufrn.imd.application;
+package br.ufrn.imd.frog_race;
 
 import java.util.Random;
 
@@ -7,12 +7,14 @@ public class RunningFrogThread extends Thread {
 	private static int raceTotalDistance;
 	private int position;
 	private int placing;
+	private long timeElapsed;
 	private Random random;
 
 	public RunningFrogThread(String name) {
 		setName(name);
 		this.placing = 0;
 		this.position = 0;
+		this.timeElapsed = 0;
 	}
 
 	public int getPlacing() {
@@ -38,6 +40,14 @@ public class RunningFrogThread extends Thread {
 	public void printSituation() {
 		System.out.println(getName() + " is at " + this.position + " meters");
 	}
+	
+	public long getTimeElapsed() {
+		return timeElapsed;
+	}
+
+	public void setTimeElapsed(long timeElapsed) {
+		this.timeElapsed = timeElapsed;
+	}
 
 	public void jump() {
 		random = new Random();
@@ -55,16 +65,15 @@ public class RunningFrogThread extends Thread {
 	public void run() {
 		random = new Random();
 		while (this.position < RunningFrogThread.raceTotalDistance) {
-			jump();
-			
-			if(this.position > RunningFrogThread.raceTotalDistance){
-				this.position = RunningFrogThread.raceTotalDistance;
-			}
-												
 			if (random.nextBoolean()) {
+				jump();
+			} else {
 				rest();
 			}
+									
+			if(this.position > RunningFrogThread.raceTotalDistance){
+				this.position = RunningFrogThread.raceTotalDistance;
+			}						
 		}
 	}
-
 }
