@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -19,31 +20,17 @@ public class SimpleSearcherRunnable implements Runnable {
 
 	public static final String NAME_FILTER = "name";
 	public static final String FORMAT_FILTER = "format";
-	public static final String SIZE_FILTER = "format";
+	public static final String SIZE_FILTER = "size";
 	public static final String DATE_FILTER = "date";
 
 	private String directoryName;
 
-	private HashMap<String, Object> filters;
+	private static HashMap<String, Object> filters = new HashMap<String, Object>();
 	private List<ResultRecord> results;
 	private List<String> directoriesFound;
 
 	public SimpleSearcherRunnable(String directoryName) {
 		this.directoryName = directoryName;
-	}
-
-	/**
-	 * Copy constructor
-	 * 
-	 * @param copy
-	 *            copy object
-	 */
-	public SimpleSearcherRunnable(SimpleSearcherRunnable copy) {
-		this(copy.directoryName);
-
-		this.filters = copy.filters;
-		this.results = copy.results;
-		this.directoriesFound = copy.directoriesFound;
 	}
 
 	public void addFilter(String name, Object value) {
@@ -54,19 +41,21 @@ public class SimpleSearcherRunnable implements Runnable {
 		filters.clear();
 	}
 
-	private boolean fileMatchesFiltersList(File file) {
+	private boolean fileMatchesFiltersList(File file) {		
 		String filename = (String) filters.get(SimpleSearcherRunnable.NAME_FILTER);
-		if ((filename != null) && (!file.getName().equals(filename))) {
+		if ((filename != null) && (!file.getName().contains(filename))) {
 			return false;
 		}
 
 		String format = (String) filters.get(SimpleSearcherRunnable.FORMAT_FILTER);
+		String[] filename_splited;
 		String fileformat;
-		int FORMAT_OPTION = 1;
 		if (format != null) {
-			fileformat = file.getName().split("/\\./")[FORMAT_OPTION];
+			filename_splited = file.getName().split("/\\./");
+			int FORMAT_FIELD = filename_splited.length-1;
+			fileformat = filename_splited[FORMAT_FIELD];
 
-			if (!fileformat.equals(format)) {
+			if (!fileformat.contains(format)) {
 				return false;
 			}
 		}
@@ -77,7 +66,7 @@ public class SimpleSearcherRunnable implements Runnable {
 		if (size != null) {
 			fileSize = file.length() / kilobyte;
 
-			if (fileSize != size) {
+			if (fileSize < size) {
 				return false;
 			}
 		}
@@ -88,7 +77,7 @@ public class SimpleSearcherRunnable implements Runnable {
 			try {
 				fileCreationDate = Files.readAttributes(file.toPath(), BasicFileAttributes.class).creationTime()
 						.toMillis();
-				if (fileCreationDate != date.getTime()) {
+				if (fileCreationDate < date.getTime()) {
 					return false;
 				}
 			} catch (IOException e) {
@@ -113,8 +102,8 @@ public class SimpleSearcherRunnable implements Runnable {
 
 	@Override
 	public void run() {
-		results.clear();
-		directoriesFound.clear();
+		results = new LinkedList<ResultRecord>();
+		directoriesFound = new LinkedList<String>();
 
 		File directory = new File(directoryName);
 
