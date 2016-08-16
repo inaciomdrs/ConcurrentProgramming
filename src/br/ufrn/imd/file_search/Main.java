@@ -9,7 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
-public class FileSearcher {
+public class Main {
 	
 	public static Scanner reader = new Scanner(System.in);
 

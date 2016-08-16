@@ -111,18 +111,23 @@ public class SimpleSearcherRunnable implements Runnable {
 			return;
 		}
 
-		File[] filesList = directory.listFiles();
-		for (File file : filesList) {
-			if (file.isDirectory()) {
-				try {
-					directoriesFound.add(file.getCanonicalPath());
-				} catch (IOException e) {
-					directoriesFound.add(file.getPath());
+		try {
+			File[] filesList = directory.listFiles();
+			for (File file : filesList) {
+				if (file.isDirectory()) {
+					try {
+						directoriesFound.add(file.getCanonicalPath());
+					} catch (IOException e) {
+						directoriesFound.add(file.getPath());
+					}
+				} else if (fileMatchesFiltersList(file)) {
+					results.add(new ResultRecord(file.getName(), file.getPath()));
 				}
-			} else if (fileMatchesFiltersList(file)) {
-				results.add(new ResultRecord(file.getName(), file.getPath()));
-			}
+			}	
+		} catch(SecurityException | NullPointerException ex ) {
+			System.out.println("Não foi possível pesquisar no diretório " + directory.getName());
 		}
+		
 	}
 
 	public String getDirectoryName() {

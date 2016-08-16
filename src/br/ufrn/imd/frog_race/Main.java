@@ -1,6 +1,6 @@
 package br.ufrn.imd.frog_race;
 
-public class FrogRace {
+public class Main {
 
 	final static int FROGS_NUMBER = 5;
 	final static int DISTANCE = 500;
