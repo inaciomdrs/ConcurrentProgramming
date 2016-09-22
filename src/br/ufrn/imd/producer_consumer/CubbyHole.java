@@ -2,8 +2,8 @@ package br.ufrn.imd.producer_consumer;
 
 public class CubbyHole {
 	private int number;
-	private boolean available = false;
-	
+	private boolean available;
+			
 	public synchronized int get(){
 		while(available == false){
 			try {
@@ -12,7 +12,7 @@ public class CubbyHole {
 		}
 		
 		available = false;
-		notifyAll();
+		notify();
 
 		return number;
 	}
@@ -27,7 +27,7 @@ public class CubbyHole {
 		number = value;
 		available = true;
 		
-		notifyAll();
+		notify();
 	}
 
 }
