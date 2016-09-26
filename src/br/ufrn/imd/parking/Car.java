@@ -15,11 +15,18 @@ public class Car extends Thread {
 		int slotsQuantity = parkingLot.numberOfSlots();
 		
 		for (int slot = 0; slot < slotsQuantity; slot++) {
-			System.out.println("Car #" + id + " is trying to park at Slot " + slot);
+			System.out.println("Car #" + id + " IS TRYING to park at Slot " + slot);
 			parkingLot.park(slot);
+			System.out.println("Car #" + id + " GOT to park at Slot " + slot);
+			try {
+				Thread.sleep(1500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
+			parkingLot.unpark(slot);
+			System.out.println("Car #" + id + " LEFT Slot " + slot);
 		}
-		
-		
 	}
 	
 }

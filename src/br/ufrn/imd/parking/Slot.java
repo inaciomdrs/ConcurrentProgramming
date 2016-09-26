@@ -15,11 +15,11 @@ public class Slot {
 	
 	public void arrive(){
 		this.semaphore.P();
-		this.available = false;
+		this.available = ParkingLot.UNAVAILABLE;
 	}
 	
 	public void depart(){
-		this.available = true;
+		this.available = ParkingLot.AVAILABLE;
 		this.semaphore.V();
 	}
 	
