@@ -1,0 +1,45 @@
+Universidade Federal do Rio Grande do Norte
+Instituto Metrópole Digital
+Bacharelado em Tecnologia da Informação
+
+Disciplina: Programação Concorrente e Distribuída.
+Docente:    Handerson Medeiros
+Discente:   Inácio Gomes
+
+Prática IV - Questão Única: Elabore sobre a necessidade de 
+sincronização entre os vários processos que executam as operações.
+
+Considerando a situação apresentada, verifica-se que a existência
+de uma única conta corrente disponível para utilização por mais de 
+um usuário ao mesmo tempo permite a existência de condição de corrida,
+na qual dois ou mais usuários tentam modificar ao mesmo tempo o valor
+do saldo da conta corrente em questão. 
+
+Tal situação pode acarretar problemas graves de inconsistência de 
+informação, em que, por exemplo, uma operação de "levantar" poderá 
+estar ocorrendo ao mesmo tempo de uma operação de "depositar". Neste
+sentido, o processamento efetuado sobre quantidade de valor a ser 
+retirada poderá ocorrer de forma errônea, uma vez que, havendo uma 
+operação simultânea de depósito, o valor do saldo sobre o qual o saque
+irá se basear estará desatualizado. O cenário inverso também é possível
+de acontecer (um depósito sendo efetuado simultaneamente ao saque. Neste
+caso, o incremento de valor tomará como base o saldo existente anteriormente
+ao saque, produzindo inconsistência na atualização do saldo).
+
+Verifica-se, assim, que o saldo da conta única configura-se como "região crítica",
+dadas as consequências do acesso e manipulação simultânea sobre si. 
+
+Observa-se, dessa forma, que a sincronização das operações "depositar" e
+"levantar" sobre o saldo da conta única faz-se necessária, de modo que, 
+enquanto uma das duas operações estiver sendo efetuada, a outra não o faça, 
+esperando a finalização da execução da operação atual. Dessa forma, o problema
+da inconsistência de dados é solucionado.
+
+A estratégia de sincronização utilizada no exercício foi utilizar semáforos
+para controlar as operações "depositar" e "levantar", de modo que no início
+de cada método a operação "P" é acionada, de modo a "reservar a região crítica
+para a thread chamante", e, ao final de cada método, a operação "V" é acionada,
+de modo a "liberar a região crítica". Dessa forma, o saldo da conta única é 
+acessado de forma serial por cada thread que o fizer, impedindo que o seja de forma 
+simultânea por mais de uma thread.
+

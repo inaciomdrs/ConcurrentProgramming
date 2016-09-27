@@ -17,7 +17,7 @@ public class BankUser extends Thread {
 		double LOWER_LIMIT = 5;
 		double UPPER_LIMIT = 10; 
 		
-		double money, balance;
+		double money;
 		
 		for (int execution = 0; execution < NUM_EXECUTIONS / HALF; execution++) {
 			money = Math.random() * UPPER_LIMIT + LOWER_LIMIT; 
