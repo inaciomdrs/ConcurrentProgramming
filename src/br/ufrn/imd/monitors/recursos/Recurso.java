@@ -1,4 +1,4 @@
-package br.ufrn.imd.monitors;
+package br.ufrn.imd.monitors.recursos;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;

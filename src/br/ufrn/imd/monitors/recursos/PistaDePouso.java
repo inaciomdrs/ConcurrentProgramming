@@ -1,4 +1,4 @@
-package br.ufrn.imd.monitors;
+package br.ufrn.imd.monitors.recursos;
 
 public class PistaDePouso extends Recurso {
 

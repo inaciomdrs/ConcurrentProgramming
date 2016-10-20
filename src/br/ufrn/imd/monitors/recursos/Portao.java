@@ -1,4 +1,4 @@
-package br.ufrn.imd.monitors;
+package br.ufrn.imd.monitors.recursos;
 
 public class Portao extends Recurso {
 	
@@ -12,8 +12,7 @@ public class Portao extends Recurso {
 	public Portao(){
 		this(((int) Math.random() * 1000));
 	}
-	
-	
+		
 	public String toString(){
 		return "Portão "+this.id;
 	}
