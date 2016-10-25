@@ -10,6 +10,7 @@ public abstract class Recurso {
 	
 	public Recurso(){
 		this.locker = new ReentrantLock();
+		this.disponivel = true;
 	}
 	
 	public boolean estaDisponivel(){

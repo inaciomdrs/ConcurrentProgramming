@@ -1,54 +1,93 @@
 package br.ufrn.imd.monitors.aviao;
 
-import br.ufrn.imd.monitors.autorizacao.AutorizacaoAcessarPortao;
-import br.ufrn.imd.monitors.autorizacao.AutorizacaoDecolar;
-import br.ufrn.imd.monitors.autorizacao.AutorizacaoPouso;
-import br.ufrn.imd.monitors.autorizacao.AutorizacaoPousoUrgente;
+import br.ufrn.imd.monitors.autorizacao.AcessarPistaPousoAutorizacao;
+import br.ufrn.imd.monitors.autorizacao.AcessarPortaoAutorizacao;
+import br.ufrn.imd.monitors.autorizacao.AutorizacaoCommand;
+import br.ufrn.imd.monitors.autorizacao.LiberarPistaPousoAutorizacao;
+import br.ufrn.imd.monitors.autorizacao.LiberarPortaoAutorizacao;
 import br.ufrn.imd.monitors.recursos.TorreDeControle;
 
 public class AviaoComum extends Aeronave {
 
+	private int portaoAcessado;
+
 	public AviaoComum(TorreDeControle torre) {
 		super(torre);
+		portaoAcessado = -1;
 	}
-	
-	private enum TIPO_REQUISICAO { POUSO, ACESSO_PORTAO, DECOLAGEM };
-	
-	public void run(){
-		int NUMERO_ITERACOES = 10;
-		
-		TIPO_REQUISICAO requisicao = TIPO_REQUISICAO.POUSO;
-		
-		for (int i = 0; i < NUMERO_ITERACOES; i++) {
-			System.out.println(this + " est· " + getLocalizacao());
-			if(getLocalizacao() == Localizacao.NO_AR){
-				System.out.println(this + ": permiss„o para pousar");
-				requisicao = TIPO_REQUISICAO.POUSO;
-				realizarPouso();
-			} else if (requisicao != TIPO_REQUISICAO.ACESSO_PORTAO) {
-				System.out.println(this + ": permiss„o para acessar o port„o");
-				setAutorizacao(new AutorizacaoAcessarPortao());
-				requisicao = TIPO_REQUISICAO.ACESSO_PORTAO;
-			} else {
-				System.out.println(this + ": permiss„o para decolar");
-				setAutorizacao(new AutorizacaoDecolar());
-				requisicao = TIPO_REQUISICAO.DECOLAGEM;
-			}
-			
-			boolean sucessoNaRequisicao = getAutorizacao().solicitarAutorizacao(getTorre());
-			
-			
-			
-			System.out.println("Entendido Torre...");
-		}
+
+	public AviaoComum(int id, TorreDeControle torre) {
+		super(id, torre);
+		portaoAcessado = -1;
 	}
-	
-	private void realizarPouso(){
-		if(getEstadoSaude() == EstadoDeSaude.SAUDAVEL){
-			setAutorizacao(new AutorizacaoPouso());	
+
+	private void pousar() {
+		System.out.println(this + ": Permiss√£o para pouso!");
+
+		AutorizacaoCommand<Boolean> autorizacao = new AcessarPistaPousoAutorizacao();
+		if (autorizacao.solicitarAutorizacao(getTorre())) {
+			System.out.println(this + ": pousando na pista...");
+			setLocalizacao(Localizacao.NA_TERRA);
 		} else {
-			setAutorizacao(new AutorizacaoPousoUrgente());
+			System.out.println(this + ": no aguardo ent√£o...");
 		}
 	}
-	
+
+	private void acessarPortao() {
+		if (getLocalizacao() == Localizacao.NA_TERRA) {
+			System.out.println(this + ": Permiss√£o para entrar nos port√µes!");
+			if (new LiberarPistaPousoAutorizacao().solicitarAutorizacao(getTorre())) {
+				AutorizacaoCommand<Integer> autorizacao = new AcessarPortaoAutorizacao();
+				portaoAcessado = autorizacao.solicitarAutorizacao(getTorre());
+			}
+		}
+	}
+
+	private void decolar() {
+		if ((getLocalizacao() == Localizacao.NA_TERRA) && (portaoAcessado != -1)) {
+			if ((new LiberarPortaoAutorizacao(portaoAcessado).solicitarAutorizacao(getTorre()))
+					&& (new AcessarPistaPousoAutorizacao().solicitarAutorizacao(getTorre()))) {
+				System.out.println(this + ": decolando...");
+				if(new LiberarPistaPousoAutorizacao().solicitarAutorizacao(getTorre())){
+					setLocalizacao(Localizacao.NO_AR);
+				}
+			}
+		}
+	}
+
+	public void run() {
+		int NUMERO_ITERACOES = 10;
+		double probabilidadeProblemas = Math.random();
+
+		int SEGUNDO_EM_MILESIMOS = 1000;
+
+		for (int i = 0; i < NUMERO_ITERACOES; i++) {
+			String local = getLocalizacao() == Localizacao.NA_TERRA ? "em solo" : "no ar";
+			String saude = getEstadoSaude() == EstadoDeSaude.SAUDAVEL ? "saud√°vel" : "com problemas";
+			String prioridade = getPriority() == MIN_PRIORITY ? "m√≠nima"
+					: (getPriority() == NORM_PRIORITY ? "normal" : "m√°xima");
+
+			System.out.println(this + " est√° " + local + " e " + saude + " (Prioridade: " + prioridade + ")");
+			
+			if(getLocalizacao() == Localizacao.NO_AR){
+				pousar();
+				acessarPortao();
+			} else {
+				decolar();
+			}
+
+			if (Math.random() <= probabilidadeProblemas) {
+				setEstadoSaude(EstadoDeSaude.COM_PROBLEMAS);
+			} else {
+				setEstadoSaude(EstadoDeSaude.SAUDAVEL);
+			}
+
+			try {
+				Thread.sleep(2 * SEGUNDO_EM_MILESIMOS);
+			} catch (InterruptedException e) {
+				System.exit(1);
+			}
+		}
+	}
+
 }

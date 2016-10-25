@@ -14,7 +14,7 @@ public class Portao extends Recurso {
 	}
 		
 	public String toString(){
-		return "Portão "+this.id;
+		return "Portao "+this.id;
 	}
 
 }

@@ -20,67 +20,64 @@ public class TorreDeControle {
 		this.IDportaoDisponvel = 0;
 	}
 	
-	public boolean autorizarPouso(){
+	public boolean concederAcessoPistaPouso(){
 		if(pistaPouso.entrar()){
-			System.out.println("Pouso concedido!");
+			System.out.println("Torre: Permissão para acesso à pista de pouso concedida!");
 			return true;
 		} else {
-			System.out.println("Pista de pouso congestionada! Aguarde um pouco!");
-			return false;
+			System.out.println("Torre: Pista congestionada! Aguarde um pouco!");
+			return false;	
 		}
 	}
 	
-	public boolean autorizarDecolagem(){
+	public boolean liberarPistaPouso(){
 		if(pistaPouso.sair()){
-			System.out.println("Decolagem concedida!");
+			System.out.println("Torre: Pista de pouso liberada!");
 			return true;
 		} else {
-			System.out.println("Pista de pouso congestionada! Aguarde um pouco!");
-			return false;
+			System.out.println("Torre: Pista de pouso continua ocupada!");
+			return false;	
 		}
 	}
 	
-	public boolean autorizarAcessoAPortao(){
-		if(haPortoesDisponiveis()){
-			acessarPortao(portoes.get(IDportaoDisponvel));
-			return true;
-		} else {
-			int nextDisponivel = 0;
-			for (Portao portao : portoes) {
-				if(portao.estaDisponivel()){
-					IDportaoDisponvel = nextDisponivel + 1;
-					return acessarPortao(portao);
-				} else {
-					nextDisponivel++;
-				}
-			}
-			
-			if(nextDisponivel >= portoes.size()){
-				System.out.println("Port�es congestionados! Aguarde um pouco!");
-				return false;
-			} else {
-				return true;
-			}
-		}
-	}
-	
-	private boolean acessarPortao(Portao portao){
-		if(portao.entrar()){
-			System.out.println(mensagemAcessoAPortao(portao));
+	public int concederAcessoPortao(){
+		while(!portoes.get(IDportaoDisponvel).estaDisponivel()){
 			IDportaoDisponvel++;
+			if(IDportaoDisponvel == portoes.size()){
+				break;
+			}
+		}
+		
+		if((IDportaoDisponvel >= portoes.size()) || (!portoes.get(IDportaoDisponvel).estaDisponivel())){
+			IDportaoDisponvel = 0;
+			System.out.println("Torre: Todos os portões estão lotados! Aguarde um pouco");
+			return -1;	
+		} else {
+			System.out.println(mensagemAcessoAPortao(portoes.get(IDportaoDisponvel)));
+			liberarPistaPouso();
+			IDportaoDisponvel++;
+			
+			if(IDportaoDisponvel == portoes.size()){
+				IDportaoDisponvel = portoes.size() - 1;
+				return IDportaoDisponvel; 
+			} else {
+				return IDportaoDisponvel-1;
+			}
+		}
+	}
+	
+	public boolean liberarPortao(int numeroPortao){
+		if(portoes.get(numeroPortao).sair()){
+			System.out.println("Torre: Portão " + numeroPortao + " liberado!");
 			return true;
 		} else {
-			System.out.println("Port�es congestionados! Aguarde um pouco!");
+			System.out.println("Torre: Portão " + numeroPortao + " NÃO liberado!");
 			return false;
 		}
 	}
 	
 	private String mensagemAcessoAPortao(Portao portao){
-		return "Dirigir-se ao " + portao;
+		return "Torre: Dirigir-se ao " + portao;
 	}
-	
-	private boolean haPortoesDisponiveis(){
-		return this.IDportaoDisponvel < portoes.size();
-	}
-	
+		
 }
