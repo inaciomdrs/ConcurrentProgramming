@@ -1,8 +1,13 @@
 package br.ufrn.imd.monitors.aviao;
 
+import br.ufrn.imd.monitors.autorizacao.IAutorizacaoCommand;
+import br.ufrn.imd.monitors.recursos.TorreDeControle;
+
 public abstract class Aeronave extends Thread {
 	
 	private int id;
+	private TorreDeControle torre;
+	private IAutorizacaoCommand autorizacao;	
 	private EstadoDeSaude estadoSaude;
 	private Localizacao localizacao;
 	
@@ -12,8 +17,9 @@ public abstract class Aeronave extends Thread {
 		setLocalizacao(Localizacao.NO_AR);
 	}
 	
-	public Aeronave(){
+	public Aeronave(TorreDeControle torre){
 		this(((int) Math.random() * 1000));
+		this.torre = torre;
 	}
 			
 	public EstadoDeSaude getEstadoSaude() {
@@ -49,9 +55,25 @@ public abstract class Aeronave extends Thread {
 			setPriority(MIN_PRIORITY);
 		}
 	}
+	
+	public TorreDeControle getTorre() {
+		return torre;
+	}
+
+	public void setTorre(TorreDeControle torre) {
+		this.torre = torre;
+	}
 		
 	public String toString(){
 		return "Aeronave "+this.id;
+	}
+
+	public IAutorizacaoCommand getAutorizacao() {
+		return autorizacao;
+	}
+
+	public void setAutorizacao(IAutorizacaoCommand autorizacao) {
+		this.autorizacao = autorizacao;
 	}
 
 }

@@ -5,7 +5,8 @@ import br.ufrn.imd.monitors.recursos.TorreDeControle;
 public class AutorizacaoAcessarPortao implements IAutorizacaoCommand {
 
 	@Override
-	public void solicitarAutorizacao(TorreDeControle torreControle) {
+	public boolean solicitarAutorizacao(TorreDeControle torreControle) {
+		return torreControle.autorizarAcessoAPortao();
 	}
 
 }

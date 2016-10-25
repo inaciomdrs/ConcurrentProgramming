@@ -20,31 +20,36 @@ public class TorreDeControle {
 		this.IDportaoDisponvel = 0;
 	}
 	
-	public void autorizarPouso(){
+	public boolean autorizarPouso(){
 		if(pistaPouso.entrar()){
 			System.out.println("Pouso concedido!");
+			return true;
 		} else {
 			System.out.println("Pista de pouso congestionada! Aguarde um pouco!");
+			return false;
 		}
 	}
 	
-	public void autorizarDecolagem(){
+	public boolean autorizarDecolagem(){
 		if(pistaPouso.sair()){
 			System.out.println("Decolagem concedida!");
+			return true;
 		} else {
 			System.out.println("Pista de pouso congestionada! Aguarde um pouco!");
+			return false;
 		}
 	}
 	
-	public void autorizarAcessoAPortao(){
+	public boolean autorizarAcessoAPortao(){
 		if(haPortoesDisponiveis()){
 			acessarPortao(portoes.get(IDportaoDisponvel));
+			return true;
 		} else {
 			int nextDisponivel = 0;
 			for (Portao portao : portoes) {
 				if(portao.estaDisponivel()){
 					IDportaoDisponvel = nextDisponivel + 1;
-					acessarPortao(portao);
+					return acessarPortao(portao);
 				} else {
 					nextDisponivel++;
 				}
@@ -52,16 +57,21 @@ public class TorreDeControle {
 			
 			if(nextDisponivel >= portoes.size()){
 				System.out.println("Portões congestionados! Aguarde um pouco!");
+				return false;
+			} else {
+				return true;
 			}
 		}
 	}
 	
-	private void acessarPortao(Portao portao){
+	private boolean acessarPortao(Portao portao){
 		if(portao.entrar()){
 			System.out.println(mensagemAcessoAPortao(portao));
 			IDportaoDisponvel++;
+			return true;
 		} else {
 			System.out.println("Portões congestionados! Aguarde um pouco!");
+			return false;
 		}
 	}
 	

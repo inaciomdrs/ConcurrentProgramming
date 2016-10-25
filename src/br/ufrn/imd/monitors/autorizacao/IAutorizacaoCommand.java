@@ -4,6 +4,6 @@ import br.ufrn.imd.monitors.recursos.TorreDeControle;
 
 public interface IAutorizacaoCommand {
 	
-	public void solicitarAutorizacao(TorreDeControle torreControle);
+	public boolean solicitarAutorizacao(TorreDeControle torreControle);
 
 }

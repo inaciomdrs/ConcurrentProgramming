@@ -5,9 +5,8 @@ import br.ufrn.imd.monitors.recursos.TorreDeControle;
 public class AutorizacaoDecolar implements IAutorizacaoCommand {
 
 	@Override
-	public void solicitarAutorizacao(TorreDeControle torreControle) {
-		// TODO Auto-generated method stub
-
+	public boolean solicitarAutorizacao(TorreDeControle torreControle) {
+		return torreControle.autorizarDecolagem();
 	}
 
 }
