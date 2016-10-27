@@ -7,7 +7,6 @@ public class TorreDeControle {
 	
 	private PistaDePouso pistaPouso;
 	private List<Portao> portoes;
-	private int IDportaoDisponvel;
 	
 	public TorreDeControle(int numeroDePortoes){
 		this.pistaPouso = PistaDePouso.getInstance();
@@ -16,54 +15,48 @@ public class TorreDeControle {
 		for (int i = 0; i < numeroDePortoes; i++) {
 			portoes.add(new Portao());
 		}
-		
-		this.IDportaoDisponvel = 0;
 	}
 	
-	public boolean concederAcessoPistaPouso(){
-		if(pistaPouso.entrar()){
+	public synchronized int concederAcessoPistaPouso(){
+		int portaoAcesso = haPortaoDisponivel();
+		
+		if((portaoAcesso != -1) && pistaPouso.entrar()){
 			System.out.println("Torre: Permissão para acesso à pista de pouso concedida!");
-			return true;
+			concederAcessoPortao(portaoAcesso);
+			pistaPouso.sair();
+			return portaoAcesso;
 		} else {
-			System.out.println("Torre: Pista congestionada! Aguarde um pouco!");
-			return false;	
+			String problem = (portaoAcesso == -1) ? "Portões lotados!" : "Pista congestionada!";
+			
+			System.out.println("Torre: "+ problem +" Aguarde um pouco!");
+			return -1;	
 		}
 	}
 	
-	public boolean liberarPistaPouso(){
+	public synchronized boolean liberarPistaPouso(int numeroPortao){
 		if(pistaPouso.sair()){
 			System.out.println("Torre: Pista de pouso liberada!");
+			liberarPortao(numeroPortao);
 			return true;
 		} else {
-			System.out.println("Torre: Pista de pouso continua ocupada!");
-			return false;	
+			System.out.println("Torre: Pista de pouso ocupada!");
+			return false;
 		}
 	}
 	
-	public int concederAcessoPortao(){
-		while(!portoes.get(IDportaoDisponvel).estaDisponivel()){
-			IDportaoDisponvel++;
-			if(IDportaoDisponvel == portoes.size()){
-				break;
+	private int haPortaoDisponivel(){
+		int numPortoes = portoes.size();
+		for (int i = 0; i < numPortoes; i++) {
+			if(portoes.get(i).estaDisponivel()){
+				return i;
 			}
 		}
-		
-		if((IDportaoDisponvel >= portoes.size()) || (!portoes.get(IDportaoDisponvel).estaDisponivel())){
-			IDportaoDisponvel = 0;
-			System.out.println("Torre: Todos os portões estão lotados! Aguarde um pouco");
-			return -1;	
-		} else {
-			System.out.println(mensagemAcessoAPortao(portoes.get(IDportaoDisponvel)));
-			liberarPistaPouso();
-			IDportaoDisponvel++;
-			
-			if(IDportaoDisponvel == portoes.size()){
-				IDportaoDisponvel = portoes.size() - 1;
-				return IDportaoDisponvel; 
-			} else {
-				return IDportaoDisponvel-1;
-			}
-		}
+		return -1;
+	}
+	
+	private void concederAcessoPortao(int numero){
+		portoes.get(numero).entrar();
+		System.out.println(mensagemAcessoAPortao(portoes.get(numero)));
 	}
 	
 	public boolean liberarPortao(int numeroPortao){

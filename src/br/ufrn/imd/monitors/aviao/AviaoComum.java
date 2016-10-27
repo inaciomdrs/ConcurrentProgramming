@@ -1,15 +1,15 @@
 package br.ufrn.imd.monitors.aviao;
 
 import br.ufrn.imd.monitors.autorizacao.AcessarPistaPousoAutorizacao;
-import br.ufrn.imd.monitors.autorizacao.AcessarPortaoAutorizacao;
 import br.ufrn.imd.monitors.autorizacao.AutorizacaoCommand;
 import br.ufrn.imd.monitors.autorizacao.LiberarPistaPousoAutorizacao;
-import br.ufrn.imd.monitors.autorizacao.LiberarPortaoAutorizacao;
 import br.ufrn.imd.monitors.recursos.TorreDeControle;
 
 public class AviaoComum extends Aeronave {
 
 	private int portaoAcessado;
+	@SuppressWarnings("rawtypes")
+	private AutorizacaoCommand autorizacao;
 
 	public AviaoComum(TorreDeControle torre) {
 		super(torre);
@@ -22,36 +22,28 @@ public class AviaoComum extends Aeronave {
 	}
 
 	private void pousar() {
-		System.out.println(this + ": Permissão para pouso!");
-
-		AutorizacaoCommand<Boolean> autorizacao = new AcessarPistaPousoAutorizacao();
-		if (autorizacao.solicitarAutorizacao(getTorre())) {
-			System.out.println(this + ": pousando na pista...");
+		System.out.println(this + ": solicito permissão para pouso.");
+		autorizacao = new AcessarPistaPousoAutorizacao();
+		portaoAcessado = (Integer) autorizacao.solicitarAutorizacao(getTorre());
+		
+		if(portaoAcessado != -1){
+			System.out.println(this + ": agradecido torre! Pousando...");
 			setLocalizacao(Localizacao.NA_TERRA);
 		} else {
-			System.out.println(this + ": no aguardo então...");
+			System.out.println(this + ": entendido torre! No aguardo...");
 		}
 	}
 
-	private void acessarPortao() {
-		if (getLocalizacao() == Localizacao.NA_TERRA) {
-			System.out.println(this + ": Permissão para entrar nos portões!");
-			if (new LiberarPistaPousoAutorizacao().solicitarAutorizacao(getTorre())) {
-				AutorizacaoCommand<Integer> autorizacao = new AcessarPortaoAutorizacao();
-				portaoAcessado = autorizacao.solicitarAutorizacao(getTorre());
-			}
-		}
-	}
-
-	private void decolar() {
-		if ((getLocalizacao() == Localizacao.NA_TERRA) && (portaoAcessado != -1)) {
-			if ((new LiberarPortaoAutorizacao(portaoAcessado).solicitarAutorizacao(getTorre()))
-					&& (new AcessarPistaPousoAutorizacao().solicitarAutorizacao(getTorre()))) {
-				System.out.println(this + ": decolando...");
-				if(new LiberarPistaPousoAutorizacao().solicitarAutorizacao(getTorre())){
-					setLocalizacao(Localizacao.NO_AR);
-				}
-			}
+	private void decolar(){
+		System.out.println(this + ": solicito permissão para decolagem.");
+		autorizacao = new LiberarPistaPousoAutorizacao(portaoAcessado);
+		boolean podeDecolar = (Boolean) autorizacao.solicitarAutorizacao(getTorre());
+		
+		if(podeDecolar){
+			System.out.println(this + ": agradecido torre! Decolando...");
+			setLocalizacao(Localizacao.NO_AR);
+		} else {
+			System.out.println(this + ": entendido torre! No aguardo...");
 		}
 	}
 
@@ -71,7 +63,6 @@ public class AviaoComum extends Aeronave {
 			
 			if(getLocalizacao() == Localizacao.NO_AR){
 				pousar();
-				acessarPortao();
 			} else {
 				decolar();
 			}
