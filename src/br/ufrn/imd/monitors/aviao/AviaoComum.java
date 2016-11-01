@@ -24,7 +24,7 @@ public class AviaoComum extends Aeronave {
 	private void pousar() {
 		System.out.println(this + ": solicito permissão para pouso.");
 		autorizacao = new AcessarPistaPousoAutorizacao();
-		portaoAcessado = (Integer) autorizacao.solicitarAutorizacao(getTorre());
+		portaoAcessado = (Integer) autorizacao.solicitarAutorizacao(getName(), getTorre());
 		
 		if(portaoAcessado != -1){
 			System.out.println(this + ": agradecido torre! Pousando...");
@@ -37,7 +37,7 @@ public class AviaoComum extends Aeronave {
 	private void decolar(){
 		System.out.println(this + ": solicito permissão para decolagem.");
 		autorizacao = new LiberarPistaPousoAutorizacao(portaoAcessado);
-		boolean podeDecolar = (Boolean) autorizacao.solicitarAutorizacao(getTorre());
+		boolean podeDecolar = (Boolean) autorizacao.solicitarAutorizacao(getName(), getTorre());
 		
 		if(podeDecolar){
 			System.out.println(this + ": agradecido torre! Decolando...");

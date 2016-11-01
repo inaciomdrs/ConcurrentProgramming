@@ -5,8 +5,8 @@ import br.ufrn.imd.monitors.recursos.TorreDeControle;
 public class AcessarPistaPousoAutorizacao implements AutorizacaoCommand<Integer> {
 
 	@Override
-	public Integer solicitarAutorizacao(TorreDeControle torreControle) {
-		return torreControle.concederAcessoPistaPouso();
+	public Integer solicitarAutorizacao(String requisitante, TorreDeControle torreControle) {
+		return torreControle.concederAcessoPistaPouso(requisitante);
 	}
 
 }

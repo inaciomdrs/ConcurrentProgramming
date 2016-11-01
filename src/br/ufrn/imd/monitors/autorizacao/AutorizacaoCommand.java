@@ -4,6 +4,6 @@ import br.ufrn.imd.monitors.recursos.TorreDeControle;
 
 public interface AutorizacaoCommand<T> {
 	
-	public abstract T solicitarAutorizacao(TorreDeControle torreControle);
+	public abstract T solicitarAutorizacao(String requisitante, TorreDeControle torreControle);
 
 }

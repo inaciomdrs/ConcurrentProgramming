@@ -11,8 +11,8 @@ public class LiberarPistaPousoAutorizacao implements AutorizacaoCommand<Boolean>
 	}
 	
 	@Override
-	public Boolean solicitarAutorizacao(TorreDeControle torreControle) {
-		return torreControle.liberarPistaPouso(numeroPortao);
+	public Boolean solicitarAutorizacao(String requisitante, TorreDeControle torreControle) {
+		return torreControle.liberarPistaPouso(requisitante, numeroPortao);
 	}
 
 }
